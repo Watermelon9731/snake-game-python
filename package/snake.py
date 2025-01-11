@@ -26,11 +26,6 @@ class Snake:
         self.corner_bottom_right = pygame.image.load('graphics/snake/corner_bottom_right.png').convert_alpha()
 
     def draw_snake(self):
-        # for block in self.body:
-        #     x_pos = block.x * cell_size
-        #     y_pos = block.y * cell_size
-        #     block_rect = pygame.Rect(x_pos, y_pos, cell_size, cell_size)
-        #     pygame.draw.rect(screen, snake_color, block_rect)
         self.update_head_graphics()
         self.update_tail_graphics()
 
@@ -91,7 +86,7 @@ class Snake:
             body_cloned.insert(0, body_cloned[0] + self.direction)
             self.body = body_cloned[:]
             self.new_block = False
-        else:
+        elif self.direction != Vector2(0,0):
             body_cloned = self.body[:-1]
             body_cloned.insert(0, body_cloned[0] + self.direction)
             self.body = body_cloned[:]
