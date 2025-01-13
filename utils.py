@@ -6,7 +6,7 @@ pygame.display.set_caption('Snakes Game by Python - UIT')
 screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
 clock = pygame.time.Clock()
 
-apple = pygame.image.load('graphics/apple.png').convert_alpha()
+watermelon = pygame.image.load('graphics/watermelon.png').convert_alpha()
 menu_bg = pygame.image.load('graphics/menu/menu_bg.jpg')
 
 grass_land = (167, 209, 61)
@@ -17,3 +17,5 @@ white = (255, 255, 255)
 start_button = (0, 255, 0)
 title = (248, 234, 81)
 button_base_color = "#d7fcd4"
+
+HS_FILE = "high_score.txt"

@@ -1,6 +1,7 @@
 import pygame, sys
+from os import path
 from pygame.math import Vector2
-from utils import screen, menu_bg, cell_size, cell_number, clock, grass_land, title, white, button_base_color
+from utils import screen, menu_bg, cell_size, cell_number, clock, grass_land, title, white, button_base_color, HS_FILE
 from package.button import Button
 from package.game import Game
 
@@ -12,24 +13,52 @@ pygame.time.set_timer(SCREEN_UPDATE, 150)
 
 game = Game()
 
+def save_high_score(score):
+    # load high score
+    dir = path.dirname(__file__)
+    with open(path.join(dir, HS_FILE), "w") as f:
+        int(f.write(str(score)))
+
+def get_high_score():
+    # load high score
+    dir = path.dirname(__file__)
+    with open(path.join(dir, HS_FILE), "r") as f:
+        try:
+            return int(f.read())
+        except: 
+            return 0
+
 def get_font(size):
     return pygame.font.Font("./graphics/font/menu.ttf", size)
 
 def restart():
+    best_score = get_high_score()
     running = True
     while running:
         MOUSE_POS = pygame.mouse.get_pos()
+        ADD_POS = 0
+
+        if game.score > best_score:
+            ADD_POS = 150
 
         SCORE_TEXT = get_font(cell_size * 2).render("SCORE", True, title)
         TEXT_RECT = SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), cell_size * 2))
 
-        SCORE_VALUE = get_font(cell_size * 2).render(game.score, True, (white))
-        VALUE_RECT = SCORE_VALUE.get_rect(center=(cell_size * (cell_number / 2), 250))
+        HIGH_SCORE_TEXT = get_font(cell_size).render("NEW HIGH SCORE!", True, title)
+        HIGH_SCORE_RECT = HIGH_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), 250))
 
-        RESTART_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 400), text_input="RESTART", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
-        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 550), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        SCORE_VALUE = get_font(cell_size * 2).render(str(game.score), True, (white))
+        VALUE_RECT = SCORE_VALUE.get_rect(center=(cell_size * (cell_number / 2), 250 + ADD_POS))
+
+        RESTART_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 400 + ADD_POS), text_input="RESTART", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 550 + ADD_POS), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
 
         screen.blit(SCORE_TEXT, TEXT_RECT)
+
+        if game.score > best_score:
+            screen.blit(HIGH_SCORE_TEXT, HIGH_SCORE_RECT)
+            save_high_score(game.score)
+
         screen.blit(SCORE_VALUE, VALUE_RECT)
 
         for button in [RESTART_BUTTON, RETURN_BUTTON]:
@@ -150,18 +179,24 @@ def play(level):
         clock.tick(60)
 
 def high_score():
+    best_score = get_high_score()
+
     running = True
     while running:
         screen.blit(menu_bg, (0, 0))
 
         MOUSE_POS = pygame.mouse.get_pos()
 
-        HIGH_SCORE_TEXT = get_font(cell_size * 2).render("HIGH SCORE", True, title)
+        HIGH_SCORE_TEXT = get_font(cell_size).render("HIGH SCORE", True, title)
         HIGH_SCORE_RECT = HIGH_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), cell_size * 2))
 
-        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 550), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        SCORE_VALUE = get_font(cell_size * 2).render(str(best_score), True, (white))
+        VALUE_RECT = SCORE_VALUE.get_rect(center=(cell_size * (cell_number / 2), 250))
+
+        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 400), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
 
         screen.blit(HIGH_SCORE_TEXT, HIGH_SCORE_RECT)
+        screen.blit(SCORE_VALUE, VALUE_RECT)
 
         RETURN_BUTTON.changeColor(MOUSE_POS)
         RETURN_BUTTON.update(screen)

@@ -1,9 +1,8 @@
-from utils import cell_size, screen, apple, cell_number, grass_bush
+from utils import cell_size, screen, watermelon, cell_number, grass_bush, HS_FILE
+from os import path
+import pygame
 from package.snake import Snake
 from package.fruit import Fruit
-from package.button import Button
-import pygame, sys
-from pygame.math import Vector2
 
 def get_font(size):
     return pygame.font.Font("./graphics/font/menu.ttf", size)
@@ -15,7 +14,7 @@ class Game:
         self.fruit = Fruit()
         self.start = True
         self.restart = False
-        self.score = ""
+        self.score = 0
 
     def update(self):
         self.game_restart = False
@@ -50,6 +49,7 @@ class Game:
         self.snake.reset()
         self.start = False
         self.restart = False
+        pygame.display.flip()
 
     def draw_grass(self):
         for row in range (cell_number):
@@ -65,17 +65,24 @@ class Game:
                         pygame.draw.rect(screen, grass_bush, grass_rect)
 
     def draw_score(self):
-        score_text = str(len(self.snake.body) - 3)
-        self.score = score_text
+        level_weight = 1
+
+        if self.level == 2:
+            level_weight = 2
+        elif self.level == 3:
+            level_weight = 4
+
+        score_text = str((len(self.snake.body) - 3) * level_weight)
+        self.score = int(score_text)
         score_font = pygame.font.Font(None, 25)
         score_surface = score_font.render(str(score_text), True, (56, 74, 12))
         score_x = int(cell_size * cell_number - 60)
         score_y = int(cell_size * cell_number - 40)
         score_rect = score_surface.get_rect(center = (score_x, score_y))
-        apple_rect = apple.get_rect(midright = (score_rect.left - 20, score_rect.centery))
-        bg_rect = pygame.Rect(apple_rect.left - 10, apple_rect.top, apple_rect.width + score_rect.width + cell_size, apple_rect.height)
+        watermelon_rect = watermelon.get_rect(midright = (score_rect.left - 20, score_rect.centery))
+        bg_rect = pygame.Rect(watermelon_rect.left - 10, watermelon_rect.top, watermelon_rect.width + score_rect.width + cell_size, watermelon_rect.height)
         
         pygame.draw.rect(screen, (255, 255, 255), bg_rect)
         screen.blit(score_surface, score_rect)
-        screen.blit(apple, apple_rect)
+        screen.blit(watermelon, watermelon_rect)
         pygame.draw.rect(screen, (56, 74, 12), bg_rect, 2)
