@@ -1,15 +1,23 @@
 from utils import cell_size, screen, apple, cell_number, grass_bush
 from package.snake import Snake
 from package.fruit import Fruit
-import pygame
+from package.button import Button
+import pygame, sys
+from pygame.math import Vector2
+
+def get_font(size):
+    return pygame.font.Font("./graphics/font/menu.ttf", size)
 
 class Game:
     def __init__(self):
         self.snake = Snake()
         self.fruit = Fruit()
         self.start = True
+        self.restart = False
+        self.score = ""
 
     def update(self):
+        self.game_restart = False
         self.snake.move_snake()
         self.check_collision()
         self.check_fail()
@@ -40,6 +48,7 @@ class Game:
     def game_over(self):
         self.snake.reset()
         self.start = False
+        self.restart = False
 
     def draw_grass(self):
         for row in range (cell_number):
@@ -56,6 +65,7 @@ class Game:
 
     def draw_score(self):
         score_text = str(len(self.snake.body) - 3)
+        self.score = score_text
         score_font = pygame.font.Font(None, 25)
         score_surface = score_font.render(str(score_text), True, (56, 74, 12))
         score_x = int(cell_size * cell_number - 60)

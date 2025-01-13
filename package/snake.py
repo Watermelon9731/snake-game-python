@@ -97,3 +97,6 @@ class Snake:
     def reset(self):
         self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
         self.direction = Vector2(0,0)
+
+    def on_hold(self):
+        self.direction = Vector2(0,0)

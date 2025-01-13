@@ -15,6 +15,48 @@ game = Game()
 def get_font(size):
     return pygame.font.Font("./graphics/font/menu.ttf", size)
 
+def restart_play():
+    running = True
+    while running:
+        MOUSE_POS = pygame.mouse.get_pos()
+
+        SCORE_TEXT = get_font(cell_size * 2).render("SCORE", True, "#b68f40")
+        TEXT_RECT = SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), cell_size * 2))
+
+        SCORE_VALUE = get_font(cell_size * 2).render(game.score, True, "White")
+        VALUE_RECT = SCORE_VALUE.get_rect(center=(cell_size * (cell_number / 2), 250))
+
+        RESTART_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 400), text_input="RESTART", font=get_font(cell_size), base_color="#d7fcd4", hovering_color="White")
+        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 550), text_input="RETURN", font=get_font(cell_size), base_color="#d7fcd4", hovering_color="White")
+
+        screen.blit(SCORE_TEXT, TEXT_RECT)
+        screen.blit(SCORE_VALUE, VALUE_RECT)
+
+        for button in [RESTART_BUTTON, RETURN_BUTTON]:
+            button.changeColor(MOUSE_POS)
+            button.update(screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if RESTART_BUTTON.checkForInput(MOUSE_POS):
+                    print("RESTART")
+                    game.restart = True
+                    running = False
+                    play()
+                if RETURN_BUTTON.checkForInput(MOUSE_POS):
+                    game.restart = False
+                    running = False
+
+
+        # draw all elements
+        pygame.display.update()
+        # frame rate
+        clock.tick(60)
+
 def play():
     running = True
     while running:
@@ -44,13 +86,14 @@ def play():
         else:
             screen.fill((0,0,0))
             game.start = True
-            running = False
+            restart_play()
+            if game.restart == False:
+                running = False
 
         # draw all elements
         pygame.display.update()
         # frame rate
         clock.tick(60)
-    
 
 def main():
     while True:
@@ -77,6 +120,7 @@ def main():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    print("PLAY")
                     play()
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     # options()
