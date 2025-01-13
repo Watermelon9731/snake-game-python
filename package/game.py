@@ -10,6 +10,7 @@ def get_font(size):
 
 class Game:
     def __init__(self):
+        self.level = 1
         self.snake = Snake()
         self.fruit = Fruit()
         self.start = True

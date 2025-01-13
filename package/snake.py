@@ -1,6 +1,6 @@
 import pygame
 from pygame.math import Vector2
-from utils import cell_size, cell_number, screen
+from utils import cell_size, screen
 
 class Snake:
     def __init__(self):
@@ -39,22 +39,6 @@ class Snake:
             elif index == len(self.body) - 1:
                 screen.blit(self.tail, block_rect)
             else:
-                # previous_block = self.body[index + 1] - block
-                # next_block = self.body[index - 1] - block
-                # if previous_block.x == next_block.x:
-                #     screen.blit(self.body_vertical, block_rect)
-                # elif previous_block.y == next_block.y:
-                #     screen.blit(self.body_horizontal, block_rect)
-                # else:
-                    # if previous_block.x == -1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == -1:
-                    #     screen.blit(self.corner_top_left, block_rect)
-                    # elif previous_block.x == -1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == -1:
-                    #     screen.blit(self.corner_bottom_left, block_rect)
-                    # elif previous_block.x == 1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == -1:
-                    #     screen.blit(self.corner_top_right, block_rect)
-                    # elif previous_block.x == 1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == -1:
-                    #     screen.blit(self.corner_bottom_right, block_rect)
-                # pygame.draw.rect(screen, (252, 242, 113), block_rect)
                 screen.blit(self.body_graphic, block_rect)
 
     def update_head_graphics(self):
