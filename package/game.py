@@ -1,4 +1,4 @@
-from utils import cell_size, screen, watermelon, cell_number, grass_bush, HS_FILE
+from utils import cell_size, screen, watermelon, cell_number, grass_bush
 from os import path
 import pygame
 from package.snake import Snake
@@ -71,8 +71,6 @@ class Game:
             level_weight = 2
         elif self.level == 3:
             level_weight = 4
-        elif self.level == 4:
-            level_weight = 6
 
         score_text = str((len(self.snake.body) - 3) * level_weight)
         self.score = int(score_text)

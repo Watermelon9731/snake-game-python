@@ -1,7 +1,7 @@
 import pygame, sys
 from os import path
 from pygame.math import Vector2
-from utils import screen, menu_bg, cell_size, cell_number, clock, grass_land, title, white, black, button_base_color, HS_FILE
+from utils import screen, menu_bg, cell_size, cell_number, clock, grass_land, title, white, black, button_base_color
 from package.button import Button
 from package.game import Game
 
@@ -13,16 +13,16 @@ pygame.time.set_timer(SCREEN_UPDATE, 150)
 
 game = Game()
 
-def save_high_score(score):
+def save_high_score(score, file):
     # load high score
     dir = path.dirname(__file__)
-    with open(path.join(dir, HS_FILE), "w") as f:
+    with open(path.join(dir, f"{file}.txt"), "w") as f:
         int(f.write(str(score)))
 
-def get_high_score():
+def get_high_score(file):
     # load high score
     dir = path.dirname(__file__)
-    with open(path.join(dir, HS_FILE), "r") as f:
+    with open(path.join(dir, f"{file}.txt"), "r") as f:
         try:
             return int(f.read())
         except: 
@@ -32,7 +32,11 @@ def get_font(size):
     return pygame.font.Font("./graphics/font/menu.ttf", size)
 
 def restart():
-    best_score = get_high_score()
+    best_score = 0
+    if game.level == 4:
+        best_score = get_high_score('time_high_score')
+    else:
+        best_score = get_high_score('high_score')
     running = True
     while running:
         MOUSE_POS = pygame.mouse.get_pos()
@@ -57,7 +61,10 @@ def restart():
 
         if game.score > best_score:
             screen.blit(HIGH_SCORE_TEXT, HIGH_SCORE_RECT)
-            save_high_score(game.score)
+            if game.level == 4:
+                save_high_score(game.score, 'time_high_score')
+            else:
+                save_high_score(game.score, 'high_score')
 
         screen.blit(SCORE_VALUE, VALUE_RECT)
 
@@ -169,7 +176,9 @@ def play(level):
             if event.type == SCREEN_UPDATE and not paused:
                 game.update()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_ESCAPE:
+                    game.game_over()
+                if event.key == pygame.K_SPACE:
                     paused = not paused
                 if not paused:
                     if event.key == pygame.K_UP:
@@ -220,73 +229,9 @@ def play(level):
         pygame.display.update()
         clock.tick(60)
 
-def save_time_high_score(score):
-    dir = path.dirname(__file__)
-    with open(path.join(dir, "time_high_score.txt"), "w") as f:
-        f.write(str(score))
-
-def get_time_high_score():
-    dir = path.dirname(__file__)
-    try:
-        with open(path.join(dir, "time_high_score.txt"), "r") as f:
-            return int(f.read())
-    except:
-        return 0
-
 def high_score():
-    best_score = get_high_score()
-    time_best_score = get_time_high_score()
-
-    running = True
-    while running:
-        screen.blit(menu_bg, (0, 0))
-        MOUSE_POS = pygame.mouse.get_pos()
-
-        HIGH_SCORE_TEXT = get_font(cell_size).render("HIGH SCORES", True, title)
-        HIGH_SCORE_RECT = HIGH_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), cell_size * 2))
-
-        NORMAL_SCORE_TEXT = get_font(cell_size).render("Normal Mode:", True, white)
-        NORMAL_SCORE_RECT = NORMAL_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), 200))
-        
-        NORMAL_VALUE = get_font(cell_size * 2).render(str(best_score), True, white)
-        NORMAL_VALUE_RECT = NORMAL_VALUE.get_rect(center=(cell_size * (cell_number / 2), 275))
-
-        TIME_SCORE_TEXT = get_font(cell_size).render("Time Mode:", True, white)
-        TIME_SCORE_RECT = TIME_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), 375))
-        
-        TIME_VALUE = get_font(cell_size * 2).render(str(time_best_score), True, white)
-        TIME_VALUE_RECT = TIME_VALUE.get_rect(center=(cell_size * (cell_number / 2), 450))
-
-        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), 
-                             pos=(cell_size * (cell_number / 2), 600), 
-                             text_input="RETURN", 
-                             font=get_font(cell_size), 
-                             base_color=button_base_color, 
-                             hovering_color=white)
-
-        screen.blit(HIGH_SCORE_TEXT, HIGH_SCORE_RECT)
-        screen.blit(NORMAL_SCORE_TEXT, NORMAL_SCORE_RECT)
-        screen.blit(NORMAL_VALUE, NORMAL_VALUE_RECT)
-        screen.blit(TIME_SCORE_TEXT, TIME_SCORE_RECT)
-        screen.blit(TIME_VALUE, TIME_VALUE_RECT)
-
-        RETURN_BUTTON.changeColor(MOUSE_POS)
-        RETURN_BUTTON.update(screen)
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if RETURN_BUTTON.checkForInput(MOUSE_POS):
-                    running = False
-                    main()
-
-        pygame.display.update()
-        clock.tick(60)
-
-def high_score():
-    best_score = get_high_score()
+    best_score = get_high_score('high_score')
+    time_best_score = get_high_score('time_high_score')
 
     running = True
     while running:
@@ -296,14 +241,26 @@ def high_score():
 
         HIGH_SCORE_TEXT = get_font(cell_size).render("HIGH SCORE", True, title)
         HIGH_SCORE_RECT = HIGH_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), cell_size * 2))
+        
+        NORMAL_SCORE_TEXT = get_font(cell_size - 10).render("NORMAL MODE:", True, white)
+        NORMAL_SCORE_RECT = NORMAL_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), 200))
 
-        SCORE_VALUE = get_font(cell_size * 2).render(str(best_score), True, (white))
-        VALUE_RECT = SCORE_VALUE.get_rect(center=(cell_size * (cell_number / 2), 250))
+        NORMAL_VALUE = get_font(cell_size - 10).render(str(best_score), True, (white))
+        NORMAL_VALUE_RECT = NORMAL_VALUE.get_rect(center=(cell_size * (cell_number / 2), 300))
+        
+        TIME_SCORE_TEXT = get_font(cell_size - 10).render("Time Mode:", True, white)
+        TIME_SCORE_RECT = TIME_SCORE_TEXT.get_rect(center=(cell_size * (cell_number / 2), 450))
+        
+        TIME_VALUE = get_font(cell_size - 10).render(str(time_best_score), True, white)
+        TIME_VALUE_RECT = TIME_VALUE.get_rect(center=(cell_size * (cell_number / 2), 550))
 
-        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 400), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 700), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
 
         screen.blit(HIGH_SCORE_TEXT, HIGH_SCORE_RECT)
-        screen.blit(SCORE_VALUE, VALUE_RECT)
+        screen.blit(NORMAL_SCORE_TEXT, NORMAL_SCORE_RECT)
+        screen.blit(NORMAL_VALUE, NORMAL_VALUE_RECT)
+        screen.blit(TIME_SCORE_TEXT, TIME_SCORE_RECT)
+        screen.blit(TIME_VALUE, TIME_VALUE_RECT)
 
         RETURN_BUTTON.changeColor(MOUSE_POS)
         RETURN_BUTTON.update(screen)

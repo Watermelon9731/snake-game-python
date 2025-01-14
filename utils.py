@@ -18,5 +18,3 @@ black = (0, 0, 0)
 start_button = (0, 255, 0)
 title = (248, 234, 81)
 button_base_color = "#d7fcd4"
-
-HS_FILE = "high_score.txt"
