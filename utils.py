@@ -14,6 +14,7 @@ grass_bush = (95,172,0)
 fruit_color = (126, 166, 114)
 snake_color = (183, 111, 122)
 white = (255, 255, 255)
+black = (0, 0, 0)
 start_button = (0, 255, 0)
 title = (248, 234, 81)
 button_base_color = "#d7fcd4"

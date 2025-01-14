@@ -1,7 +1,7 @@
 import pygame, sys
 from os import path
 from pygame.math import Vector2
-from utils import screen, menu_bg, cell_size, cell_number, clock, grass_land, title, white, button_base_color, HS_FILE
+from utils import screen, menu_bg, cell_size, cell_number, clock, grass_land, title, white, black, button_base_color, HS_FILE
 from package.button import Button
 from package.game import Game
 
@@ -77,6 +77,7 @@ def restart():
                     running = False
                     play(game.level)
                 if RETURN_BUTTON.checkForInput(MOUSE_POS):
+                    print("RETURN")
                     game.restart = False
                     running = False
 
@@ -95,11 +96,11 @@ def start():
         LEVEL_TEXT = get_font(cell_size * 2).render("LEVEL", True, title)
         LEVEL_RECT = LEVEL_TEXT.get_rect(center=(cell_size * (cell_number / 2), cell_size * 2))
 
-        EASY_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 200), text_input="EASY", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
-        NORMAL_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 325), text_input="NORMAL", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
-        HARD_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 450), text_input="HARD", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
-        TIME_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 575), text_input="10 SECONDS", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
-        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/play_rect.png"), pos=(cell_size * (cell_number / 2), 700), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        EASY_BUTTON = Button(image=pygame.image.load("graphics/menu/mode_rect.png"), pos=(cell_size * (cell_number / 2), 200), text_input="EASY", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        NORMAL_BUTTON = Button(image=pygame.image.load("graphics/menu/mode_rect.png"), pos=(cell_size * (cell_number / 2), 325), text_input="NORMAL", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        HARD_BUTTON = Button(image=pygame.image.load("graphics/menu/mode_rect.png"), pos=(cell_size * (cell_number / 2), 450), text_input="HARD", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        TIME_BUTTON = Button(image=pygame.image.load("graphics/menu/mode_rect.png"), pos=(cell_size * (cell_number / 2), 575), text_input="10 SECONDS", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
+        RETURN_BUTTON = Button(image=pygame.image.load("graphics/menu/mode_rect.png"), pos=(cell_size * (cell_number / 2), 700), text_input="RETURN", font=get_font(cell_size), base_color=button_base_color, hovering_color=(white))
 
         screen.blit(LEVEL_TEXT, LEVEL_RECT)
 
@@ -141,19 +142,19 @@ def play(level):
     elif level == 3:
         game.level = 3
         pygame.time.set_timer(SCREEN_UPDATE, 50)
-    elif level == 4:  # Time mode
+    elif level == 4:
         game.level = 4
-        pygame.time.set_timer(SCREEN_UPDATE, 100)  # Medium speed for time mode
+        pygame.time.set_timer(SCREEN_UPDATE, 50)
         
     running = True
     paused = False
     pause_font = get_font(cell_size)
+    
     pause_text = pause_font.render("PAUSED", True, white)
     pause_rect = pause_text.get_rect(center=(cell_size * (cell_number / 2), cell_size * (cell_number / 2)))
     
-    # Time mode variables
     start_time = None
-    time_font = get_font(cell_size)
+    time_font = pygame.font.Font(None, 30)
     
     while running:
         if level == 4 and start_time is None:
@@ -188,18 +189,20 @@ def play(level):
             screen.fill(grass_land)
             game.draw_element()
             
-            # Handle time mode
             if level == 4:
                 if not paused:
-                    elapsed_time = (current_time - start_time) // 1000  # Convert to seconds
+                    elapsed_time = (current_time - start_time) // 1000
                     time_left = 10 - elapsed_time
                     if time_left <= 0:
-                        game.start = False  # End game when time's up
+                        game.start = False
+                        game.game_over()
                     else:
-                        # Display time left
-                        time_text = time_font.render(f"Time: {time_left}s", True, white)
-                        time_rect = time_text.get_rect(topleft=(10, 10))
+                        time_text = time_font.render(f"Time: {time_left}s", True, black)
+                        time_rect = time_text.get_rect(center=(cell_size + (cell_size / 2), (cell_size / 2)))
+                        bg_time_rect = pygame.Rect(time_rect.x - 10, time_rect.y - 5, cell_size * 3, time_rect.height + 10)
+                        pygame.draw.rect(screen, (255, 255, 255), bg_time_rect)
                         screen.blit(time_text, time_rect)
+                        pygame.draw.rect(screen, (56, 74, 12), bg_time_rect, 2)
             
             if paused:
                 pause_overlay = pygame.Surface((cell_size * cell_number, cell_size * cell_number))

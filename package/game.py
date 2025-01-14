@@ -71,6 +71,8 @@ class Game:
             level_weight = 2
         elif self.level == 3:
             level_weight = 4
+        elif self.level == 4:
+            level_weight = 6
 
         score_text = str((len(self.snake.body) - 3) * level_weight)
         self.score = int(score_text)
